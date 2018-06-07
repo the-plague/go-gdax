@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const queryDelay = 200 * time.Millisecond
+
 func TestGetProducts(t *testing.T) {
 	client := NewTestClient()
 	products, err := client.GetProducts()
@@ -58,7 +60,7 @@ func TestListTrades(t *testing.T) {
 
 	for cursor.HasMore {
 		// Wait a bit to avoid rate limits
-		time.Sleep(time.Second)
+		time.Sleep(queryDelay)
 		count++
 		
 		if err := cursor.NextPage(&trades); err != nil {
