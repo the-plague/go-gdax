@@ -29,6 +29,10 @@ func TestCreateLimitOrders(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	if err := client.CancelOrder(savedOrder.Id); err != nil {
+		t.Error(err)
+	}
 }
 
 func TestCreateMarketOrders(t *testing.T) {
@@ -59,21 +63,23 @@ func TestCreateMarketOrders(t *testing.T) {
 }
 
 func TestCancelOrder(t *testing.T) {
-	var orders []Order
 	client := NewTestClient()
-	cursor := client.ListOrders()
-	for cursor.HasMore {
-		if err := cursor.NextPage(&orders); err != nil {
-			t.Error(err)
-		}
 
-		for _, o := range orders {
-			if err := client.CancelOrder(o.Id); err != nil {
-				if err.Error() != "Order already done" {
-					t.Error(err)
-				}
-			}
-		}
+	order := Order{
+		Price:     1.00,
+		Size:      1000.00,
+		Side:      "buy",
+		ProductId: "BTC-USD",
+	}
+
+	savedOrder, err := client.CreateOrder(&order)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if err := client.CancelOrder(savedOrder.Id); err != nil {
+		t.Error(err)
+		t.Error(err)
 	}
 }
 
@@ -99,6 +105,10 @@ func TestGetOrder(t *testing.T) {
 
 	if getOrder.Id != savedOrder.Id {
 		t.Error(errors.New("Order ids do not match"))
+	}
+
+	if err := client.CancelOrder(savedOrder.Id); err != nil {
+		t.Error(err)
 	}
 }
 
@@ -137,19 +147,20 @@ func TestCancelAllOrders(t *testing.T) {
 	client := NewTestClient()
 
 	for _, pair := range []string{"BTC-USD", "ETH-USD", "LTC-USD"} {
-		order := Order{Price: "1.00", Size: "10000.00", Side: "buy", ProductId: pair}
+    order := Order{Price: "1.00", Size: "10000.00", Side: "buy", ProductId: pair}
 
-		if _, err := client.CreateOrder(&order); err != nil {
+			if _, err := client.CreateOrder(&order); err != nil {
+				t.Error(err)
+			}
+		}
+
+		orderIDs, err := client.CancelAllOrders(CancelAllOrdersParams{ProductId: pair})
+		if err != nil {
 			t.Error(err)
 		}
-	}
 
-	orderIDs, err := client.CancelAllOrders(CancelAllOrdersParams{ProductId: "LTC-USD"})
-	if err != nil {
-		t.Error(err)
-	}
-
-	if len(orderIDs) != 1 {
-		t.Error("Did not cancel single order")
+		if len(orderIDs) != 2 {
+			t.Error("Did not cancel all orders")
+		}
 	}
 }
