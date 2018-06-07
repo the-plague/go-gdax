@@ -105,7 +105,7 @@ func (e *BookEntry) UnmarshalJSON(data []byte) error {
 		// Try to see if it's a string
 		stringOrderId, ok = entry[2].(string)
 		if !ok {
-			return errors.New("Could not parse 3rd column, tried int and string")
+			return errors.New(fmt.Sprintf("Could not parse 3rd column, tried int and string: %v", entry[2]))
 		}
 		e.OrderId = stringOrderId
 
