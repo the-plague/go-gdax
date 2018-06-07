@@ -100,17 +100,17 @@ func (e *BookEntry) UnmarshalJSON(data []byte) error {
 	}
 
 	var stringOrderId string
-	numberOfOrdersInt, ok := entry[2].(int)
+	numberOfOrdersFloat, ok := entry[2].(float64)
 	if !ok {
 		// Try to see if it's a string
 		stringOrderId, ok = entry[2].(string)
 		if !ok {
-			return errors.New(fmt.Sprintf("Could not parse 3rd column, tried int and string: %v", entry[2]))
+			return errors.New(fmt.Sprintf("Could not parse 3rd column, tried int and string: %t", entry[2]))
 		}
 		e.OrderId = stringOrderId
 
 	} else {
-		e.NumberOfOrders = numberOfOrdersInt
+		e.NumberOfOrders = int(numberOfOrdersFloat)
 	}
 
 	return nil
