@@ -3,6 +3,11 @@ package gdax
 import (
 	"errors"
 	"testing"
+	"time"
+)
+
+const (
+	orderCycles = 2
 )
 
 func TestCreateLimitOrders(t *testing.T) {
@@ -147,19 +152,29 @@ func TestCancelAllOrders(t *testing.T) {
 	client := NewTestClient()
 
 	for _, pair := range []string{"BTC-USD", "ETH-USD", "LTC-USD"} {
-    order := Order{Price: "1.00", Size: "10000.00", Side: "buy", ProductId: pair}
-
+		
+		// Create orders
+		for i := 0; i < orderCycles; i++ {
+			order := Order{Price: "1.00",
+			       Size: "10000.00",
+			       Side: "buy", 
+			       ProductId: pair}
+			
 			if _, err := client.CreateOrder(&order); err != nil {
 				t.Error(err)
 			}
+			
+			// Wait a second between requests to avoid running into rate limits
+			time.Sleep(time.Second)
 		}
 
+		// Attempt to cancel all outstanding orders for this currency
 		orderIDs, err := client.CancelAllOrders(CancelAllOrdersParams{ProductId: pair})
 		if err != nil {
 			t.Error(err)
 		}
 
-		if len(orderIDs) != 2 {
+		if len(orderIDs) != orderCycles {
 			t.Error("Did not cancel all orders")
 		}
 	}
