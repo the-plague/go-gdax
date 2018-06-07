@@ -10,12 +10,21 @@ const (
 	orderCycles = 2
 )
 
+// Parameters for test orders. Constants at GDAX precision (crude fix to get tests working.)
+const (
+	limitSize = "1.00"
+	limitPrice = "1.00000000"
+	
+	marketSize = "2.00000000"
+	marketFunds = "10.00"
+)
+
 func TestCreateLimitOrders(t *testing.T) {
 	client := NewTestClient()
 
 	order := Order{
-		Price:     "1.00",
-		Size:      "1.00",
+		Price:     limitPrice,
+		Size:      limitSize,
 		Side:      "buy",
 		ProductId: "BTC-USD",
 	}
@@ -44,8 +53,8 @@ func TestCreateMarketOrders(t *testing.T) {
 	client := NewTestClient()
 
 	order := Order{
-		Funds:     "10.00",
-		Size:      "2.00",
+		Funds:     marketFunds,
+		Size:      marketSize,
 		Side:      "buy",
 		Type:      "market",
 		ProductId: "BTC-USD",
