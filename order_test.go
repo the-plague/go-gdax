@@ -71,8 +71,8 @@ func TestCancelOrder(t *testing.T) {
 	client := NewTestClient()
 
 	order := Order{
-		Price:     1.00,
-		Size:      1000.00,
+		Price:     "1.00",
+		Size:      "1000.00",
 		Side:      "buy",
 		ProductId: "BTC-USD",
 	}
