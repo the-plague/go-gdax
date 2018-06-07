@@ -2,6 +2,7 @@ package gdax
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 )
@@ -50,15 +51,18 @@ func TestGetTicker(t *testing.T) {
 
 func TestListTrades(t *testing.T) {
 	var trades []Trade
+	
+	count := 0
 	client := NewTestClient()
 	cursor := client.ListTrades("BTC-USD")
 
 	for cursor.HasMore {
 		// Wait a bit to avoid rate limits
 		time.Sleep(time.Second)
+		count++
 		
 		if err := cursor.NextPage(&trades); err != nil {
-			t.Error(err)
+			t.Error(fmt.Errorf("%s\t(cycle %d)", err, count))
 		}
 
 		for _, a := range trades {
