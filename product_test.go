@@ -54,6 +54,9 @@ func TestListTrades(t *testing.T) {
 	cursor := client.ListTrades("BTC-USD")
 
 	for cursor.HasMore {
+		// Wait a bit to avoid rate limits
+		time.Sleep(time.Second)
+		
 		if err := cursor.NextPage(&trades); err != nil {
 			t.Error(err)
 		}
