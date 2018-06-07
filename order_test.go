@@ -15,6 +15,8 @@ const (
 	limitSize = "1.00000000"
 	limitPrice = "1.00000000"
 	
+	bigLimitSize = "10000.00000000"
+	
 	marketSize = "2.00000000"
 	marketFunds = "10.00"
 )
@@ -164,8 +166,8 @@ func TestCancelAllOrders(t *testing.T) {
 		
 		// Create orders
 		for i := 0; i < orderCycles; i++ {
-			order := Order{Price: "1.00",
-			       Size: "10000.00",
+			order := Order{Price: limitPrice,
+			       Size: bigLimitSize,
 			       Side: "buy", 
 			       ProductId: pair}
 			
