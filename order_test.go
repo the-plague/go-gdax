@@ -12,7 +12,7 @@ const (
 
 // Parameters for test orders. Constants at GDAX precision (crude fix to get tests working.)
 const (
-	limitSize = "1.00"
+	limitSize = "1.00000000"
 	limitPrice = "1.00000000"
 	
 	marketSize = "2.00000000"
