@@ -14,7 +14,7 @@ import (
 // Client parameters
 const (
 	baseUrl = "https://api.pro.coinbase.com"
-	userAgent = "im a robot lol/4.20"
+	userAgent = "imarobotlol/4.20"
 	
 	timeoutSeconds = 15
 )
