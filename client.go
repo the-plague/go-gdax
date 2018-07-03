@@ -11,6 +11,14 @@ import (
 	"time"
 )
 
+// Client parameters
+const (
+	baseUrl = "https://api.pro.coinbase.com"
+	userAgent = "im a robot lol/4.20"
+	
+	timeoutSeconds = 15
+)
+
 type Client struct {
 	BaseURL    string
 	Secret     string
@@ -22,12 +30,12 @@ type Client struct {
 
 func NewClient(secret, key, passphrase string) *Client {
 	client := Client{
-		BaseURL:    "https://api.gdax.com",
+		BaseURL:    baseUrl,
 		Secret:     secret,
 		Key:        key,
 		Passphrase: passphrase,
 		HttpClient: &http.Client{
-			Timeout: 15 * time.Second,
+			Timeout: timeoutSeconds * time.Second,
 		},
 		RetryCount: 0,
 	}
@@ -86,7 +94,7 @@ func (c *Client) request(method string, url string,
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("User-Agent", "Baylatent Bot 2.0")
+	req.Header.Add("User-Agent", userAgent)
 
 	h, err := c.Headers(method, url, timestamp, string(data))
 	for k, v := range h {
