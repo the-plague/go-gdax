@@ -1,10 +1,14 @@
 package gdax
 
+import (
+	"encoding/json"
+)
+
 type Message struct {
 	Type          string           `json:"type"`
 	ProductId     string           `json:"product_id,omitempty"`
 	ProductIds    []string         `json:"product_ids,omitempty"`
-	TradeId       int64            `json:"trade_id,number,omitempty"`
+	TradeId       int              `json:"trade_id,number,omitempty"`
 	OrderId       string           `json:"order_id,omitempty"`
 	Sequence      int64            `json:"sequence,number,omitempty"`
 	MakerOrderId  string           `json:"maker_order_id,omitempty"`
@@ -22,9 +26,9 @@ type Message struct {
 	NewFunds      string           `json:"new_funds,omitempty"`
 	OldFunds      string           `json:"old_funds,omitempty"`
 	Message       string           `json:"message,omitempty"`
-	Bids          [][]string       `json:"bids,omitempty"`
-	Asks          [][]string       `json:"asks,omitempty"`
-	Changes       [][]string       `json:"changes,omitempty"`
+	Bids          []SnapshotEntry  `json:"bids,omitempty"`
+	Asks          []SnapshotEntry  `json:"asks,omitempty"`
+	Changes       []SnapshotChange `json:"changes,omitempty"`
 	LastSize      string           `json:"last_size,omitempty"`
 	BestBid       string           `json:"best_bid,omitempty"`
 	BestAsk       string           `json:"best_ask,omitempty"`
@@ -40,13 +44,23 @@ type Message struct {
 	Volume30d string `json:"volume_30d,omitempty"`
 
 	// Fields added for heartbeat message support.
-	LastTrade int64 `json:"last_trade_id,number,omitempty"`
-
+	LastTradeId int `json:"last_trade_id,number,omitempty"`
 }
 
 type MessageChannel struct {
 	Name       string   `json:"name"`
 	ProductIds []string `json:"product_ids"`
+}
+
+type SnapshotChange struct {
+	Side  string
+	Price string
+	Size  string
+}
+
+type SnapshotEntry struct {
+	Price string
+	Size  string
 }
 
 type SignedMessage struct {
@@ -55,4 +69,31 @@ type SignedMessage struct {
 	Passphrase string `json:"passphrase"`
 	Timestamp  string `json:"timestamp"`
 	Signature  string `json:"signature"`
+}
+
+func (e *SnapshotEntry) UnmarshalJSON(data []byte) error {
+	var entry []string
+
+	if err := json.Unmarshal(data, &entry); err != nil {
+		return err
+	}
+
+	e.Price = entry[0]
+	e.Size = entry[1]
+
+	return nil
+}
+
+func (e *SnapshotChange) UnmarshalJSON(data []byte) error {
+	var entry []string
+
+	if err := json.Unmarshal(data, &entry); err != nil {
+		return err
+	}
+
+	e.Side = entry[0]
+	e.Price = entry[1]
+	e.Size = entry[2]
+
+	return nil
 }

@@ -11,16 +11,20 @@ type Order struct {
 	ProductId string `json:"product_id"`
 	ClientOID string `json:"client_oid,omitempty"`
 	Stp       string `json:"stp,omitempty"`
+
 	// Limit Order
 	Price       string `json:"price,omitempty"`
 	TimeInForce string `json:"time_in_force,omitempty"`
 	PostOnly    bool   `json:"post_only,omitempty"`
 	CancelAfter string `json:"cancel_after,omitempty"`
+
 	// Market Order
 	Funds string `json:"funds,omitempty"`
+
 	// Stop Order
-	Stop 	string `json:"stop,omitempty"`
+	Stop      string `json:"stop,omitempty"`
 	StopPrice string `json:"stop_price,omitempty"`
+
 	// Response Fields
 	Id            string `json:"id"`
 	Status        string `json:"status,omitempty"`

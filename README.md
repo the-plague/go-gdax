@@ -6,10 +6,10 @@ Go GDAX [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://
 Go client for [GDAX](https://www.gdax.com)
 
 ## Installation
-
 ```sh
 go get github.com/preichenberger/go-gdax
 ```
+***!!! As of 0.5 this library uses strings and is not backwards compatible with previous versions, to install previous versions, please use a tool like [GoDep](https://github.com/golang/dep)***
 
 ## Documentation
 For full details on functionality, see [GoDoc](http://godoc.org/github.com/preichenberger/go-gdax) documentation.
@@ -46,6 +46,47 @@ import (
 client.HttpClient = &http.Client {
   Timeout: 15 * time.Second,
 }
+```
+
+### Decimals
+To manage precision correctly, this library sends all price values as strings. It is recommended to use a decimal library
+like Spring's [Decimal](https://github.com/shopspring/decimal) if you are doing any manipulation of prices.
+
+Example:
+```go
+import (
+  "github.com/shopspring/decimal"
+)
+
+book, err := gdax.getBook("BTC-USD", 1)
+if err != nil {
+    println(err.Error())  
+}
+
+lastPrice, err := decimal.NewFromString(book.Bids[0].Price)
+if err != nil {
+    println(err.Error())  
+}
+
+order := gdax.Order{
+  Price: lastPrice.Add(decimal.NewFromFloat(1.00)).String(),
+  Size: "2.00",
+  Side: "buy",
+  ProductId: "BTC-USD",
+}
+
+savedOrder, err := client.CreateOrder(&order)
+if err != nil {
+  println(err.Error())
+}
+
+println(savedOrder.Id)
+```
+
+### Retry
+You can set a retry count which uses exponential backoff: (2^(retry_attempt) - 1) / 2 * 1000 * milliseconds
+```
+client.RetryCount = 3 # 500ms, 1500ms, 3500ms
 ```
 
 ### Cursor
@@ -132,8 +173,8 @@ Listen for websocket messages
     println(err.Error())
   }
 
-  message:= gdax.Message{}
   for true {
+    message := gdax.Message{}
     if err := wsConn.ReadJSON(&message); err != nil {
       println(err.Error())
       break
@@ -176,7 +217,7 @@ Get Accounts:
 
 List Account Ledger:
 ```go
-  var ledger []gdax.LedgerEntry
+  var ledgers []gdax.LedgerEntry
 
   accounts, err := client.GetAccounts()
   if err != nil {
@@ -186,11 +227,11 @@ List Account Ledger:
   for _, a := range accounts {
     cursor := client.ListAccountLedger(a.Id)
     for cursor.HasMore {
-      if err := cursor.NextPage(&ledger); err != nil {
+      if err := cursor.NextPage(&ledgers); err != nil {
         println(err.Error())
       }
 
-      for _, e := range ledger {
+      for _, e := range ledgers {
         println(e.Amount)
       }
   }
@@ -199,8 +240,8 @@ List Account Ledger:
 Create an Order:
 ```go
   order := gdax.Order{
-    Price: 1.00,
-    Size: 1.00,
+    Price: "1.00",
+    Size: "1.00",
     Side: "buy",
     ProductId: "BTC-USD",
   }
@@ -217,7 +258,7 @@ Transfer funds:
 ```go
   transfer := gdax.Transfer {
     Type: "deposit",
-    Amount: 1.00,
+    Amount: "1.00",
   }
 
   savedTransfer, err := client.CreateTransfer(&transfer)

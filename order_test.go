@@ -12,12 +12,12 @@ const (
 
 // Parameters for test orders. Constants at GDAX precision (crude fix to get tests working.)
 const (
-	limitSize = "1.00000000"
+	limitSize  = "1000.00000000"
 	limitPrice = "1.00000000"
-	
+
 	bigLimitSize = "10000.00000000"
-	
-	marketSize = "2.00000000"
+
+	marketSize  = "1000.00000000"
 	marketFunds = "10.00"
 )
 
@@ -55,8 +55,9 @@ func TestCreateMarketOrders(t *testing.T) {
 	client := NewTestClient()
 
 	order := Order{
-		Funds:     marketFunds,
-		Size:      marketSize,
+		Funds: marketFunds,
+		Size:  marketSize,
+
 		Side:      "buy",
 		Type:      "market",
 		ProductId: "BTC-USD",
@@ -163,18 +164,18 @@ func TestCancelAllOrders(t *testing.T) {
 	client := NewTestClient()
 
 	for _, pair := range []string{"BTC-USD", "ETH-USD", "LTC-USD"} {
-		
+
 		// Create orders
 		for i := 0; i < orderCycles; i++ {
 			order := Order{Price: limitPrice,
-			       Size: bigLimitSize,
-			       Side: "buy", 
-			       ProductId: pair}
-			
+				Size:      bigLimitSize,
+				Side:      "sell",
+				ProductId: pair}
+
 			if _, err := client.CreateOrder(&order); err != nil {
 				t.Error(err)
 			}
-			
+
 			// Wait a second between requests to avoid running into rate limits
 			time.Sleep(time.Second)
 		}
