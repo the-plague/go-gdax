@@ -13,9 +13,9 @@ import (
 
 // Client parameters
 const (
-	baseUrl = "https://api.pro.coinbase.com"
+	baseUrl   = "https://api.pro.coinbase.com"
 	userAgent = "imarobotlol/4.20"
-	
+
 	timeoutSeconds = 15
 )
 
@@ -102,10 +102,12 @@ func (c *Client) request(method string, url string,
 	}
 
 	res, err = c.HttpClient.Do(req)
+	if res != nil {
+		defer res.Body.Close()
+	}
 	if err != nil {
 		return res, err
 	}
-	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
 		defer res.Body.Close()
