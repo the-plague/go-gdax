@@ -50,9 +50,12 @@ func (c *Client) Request(method string, url string,
 		time.Sleep(retryDuration)
 
 		res, err = c.request(method, url, params, result)
-		if res.StatusCode == 429 {
-			continue
-		} else {
+
+		if res == nil {
+			break
+		}
+
+		if res.StatusCode != 429 {
 			break
 		}
 	}
