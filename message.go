@@ -19,7 +19,7 @@ type Message struct {
 	OldSize       string           `json:"old_size,omitempty" csv:"old_size"`
 	Size          string           `json:"size,omitempty" csv:"size"`
 	Price         string           `json:"price,omitempty" csv:"price"`
-	Side          string           `json:"side,omitempty" csv:"size"`
+	Side          string           `json:"side,omitempty" csv:"side"`
 	Reason        string           `json:"reason,omitempty"	csv:"reason"`
 	OrderType     string           `json:"order_type,omitempty"	csv:"order_type"`
 	Funds         string           `json:"funds,omitempty" csv:"funds"`
