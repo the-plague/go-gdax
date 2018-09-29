@@ -63,3 +63,7 @@ func (t Time) MarshalJSON() ([]byte, error) {
 func (t *Time) Time() time.Time {
 	return time.Time(*t)
 }
+
+func (t *Time) String() string {
+	return time.Time(*t).String()
+}
