@@ -36,7 +36,9 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 
 		"2006-01-02 15:04:05.999999",
 		"2006-01-02T15:04:05Z",
-		"2006-01-02 15:04:05.999999+00"}
+		"2006-01-02 15:04:05.999999+00",
+		"2006-01-02 15:04:05.999999999 -0700 MST",
+	}
 	for _, layout := range layouts {
 		parsedTime, err = time.Parse(layout,
 			strings.Replace(string(data), "\"", "", -1))
@@ -66,4 +68,9 @@ func (t *Time) Time() time.Time {
 
 func (t *Time) String() string {
 	return time.Time(*t).String()
+}
+
+// Needed for CSV marshalling with gocsv library.
+func (t *Time) UnmarshalCSV(csv string) error {
+	return t.UnmarshalJSON([]byte(csv))
 }
